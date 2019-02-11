@@ -8,14 +8,14 @@ class ForumsDefaultHookSet(object):
 
     def can_create_reply(self, request, thread):
         return all([
-            request.user.has_perm("forums.add_forumreply", obj=thread),
+            request.user.has_perm("forums.add_forumreply"),
             not thread.closed,
             not thread.forum.closed,
         ])
 
     def can_create_thread(self, request, thread):
         return all([
-            request.user.has_perm("forums.add_forumthread", obj=thread),
+            request.user.has_perm("forums.add_forumthread"),
             not thread.closed
         ])
 

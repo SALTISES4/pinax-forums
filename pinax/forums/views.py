@@ -47,7 +47,7 @@ class ForumsView(ListView):
         }
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(ForumsView, self).get_context_data(**kwargs)
         context.update(**self.stats())
         return context
 
@@ -59,7 +59,7 @@ class ForumCategoryView(DetailView):
     template_name = "pinax/forums/category.html"
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(ForumCategoryView, self).get_context_data(**kwargs)
         context["forums"] = self.object.forums.order_by("title")
         return context
 
@@ -77,7 +77,7 @@ class ForumView(DetailView):
         return self.object.threads.order_by("-sticky", "-last_modified")
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(ForumView, self).get_context_data(**kwargs)
         context["threads"] = self.threads()
         context["can_create_thread"] = self.can_create_thread()
         return context
@@ -98,13 +98,13 @@ class ForumThreadView(FormView, DetailView):
     template_name = "pinax/forums/thread.html"
 
     def get_queryset(self):
-        return super().get_queryset().select_related("forum")
+        return super(ForumThreadView, self).get_queryset().select_related("forum")
 
     def can_create_reply(self):
         return hookset.can_create_reply(request=self.request, thread=self.object)
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(ForumThreadView, self).get_context_data(**kwargs)
         if self.can_create_reply():
             context["reply_form"] = context["form"]
         else:
@@ -139,7 +139,7 @@ class ForumThreadView(FormView, DetailView):
         self.object = self.get_object()
         if not hookset.can_access(request, self.object):
             raise Http404()
-        return super().dispatch(request, *args, **kwargs)
+        return super(ForumThreadView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(object=self.object)
@@ -148,7 +148,7 @@ class ForumThreadView(FormView, DetailView):
 
     def post(self, request, *args, **kwargs):
         if self.can_create_reply():
-            return super().post(request, *args, **kwargs)
+            return super(ForumThreadView, self).post(request, *args, **kwargs)
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
 
@@ -189,7 +189,7 @@ class PostCreateView(LoginRequiredMixin, FormView, DetailView):
         if not self.can_create_thread():
             messages.error(request, "You do not have permission to create a thread.")
             return HttpResponseRedirect(reverse("pinax_forums:forum", args=[self.object.id]))
-        return super().dispatch(request, *args, **kwargs)
+        return super(PostCreateView, self).dispatch(request, *args, **kwargs)
 
 
 class ForumThreadReplyCreateView(LoginRequiredMixin, FormView, DetailView):
@@ -215,7 +215,7 @@ class ForumThreadReplyCreateView(LoginRequiredMixin, FormView, DetailView):
             messages.error(request, "You do not have permission to reply to this thread.")
             return HttpResponseRedirect(reverse("pinax_forums:thread", args=[self.object.id]))
 
-        return super().dispatch(request, *args, **kwargs)
+        return super(ForumThreadReplyCreateView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         reply = form.save(commit=False)
@@ -235,7 +235,7 @@ class ForumThreadReplyCreateView(LoginRequiredMixin, FormView, DetailView):
         return HttpResponseRedirect(reverse("pinax_forums:thread", args=[self.object.pk]))
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(ForumThreadReplyCreateView, self).get_context_data(**kwargs)
         context["subscribed"] = self.object.subscribed(self.request.user, "email")
         context["first_reply"] = not ForumReply.objects.filter(thread=self.object, author=self.request.user).exists()
         return context
@@ -257,13 +257,13 @@ class PostEditView(LoginRequiredMixin, UpdateView):
         self.object = self.get_object()
         if not self.object.editable(request.user):
             raise Http404()
-        return super().dispatch(request, *args, **kwargs)
+        return super(PostEditView, self).dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse("pinax_forums:thread", args=[self.thread_id])
 
     def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
+        kwargs = super(PostEditView, self).get_form_kwargs()
         kwargs.update({"no_subscribe": True})
         return kwargs
 
@@ -318,10 +318,10 @@ class ThreadUpdatesView(LoginRequiredMixin, ListView):
     template_name = "pinax/forums/thread_updates.html"
 
     def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user, kind="onsite")
+        return super(ThreadUpdatesView, self).get_queryset().filter(user=self.request.user, kind="onsite")
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(ThreadUpdatesView, self).get_context_data(**kwargs)
         subscriptions = self.get_queryset().select_related("thread", "user").order_by("-thread__last_modified")
         context["subscriptions"] = subscriptions
         return context
