@@ -42,5 +42,12 @@ admin.site.register(
     ]
 )
 admin.site.register(models.ForumThread, ForumThreadAdmin)
-
-admin.site.register(models.ForumReply, ForumReplyAdmin)
+admin.site.register(
+    models.ForumReply,
+    list_display=[
+        "id",
+        "author",
+        "created",
+        "thread"
+    ]
+)
