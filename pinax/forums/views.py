@@ -298,7 +298,7 @@ class SubscribeView(LoginRequiredMixin, DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.object.subscribe(request.user, "email")
+        self.object.subscribe(request.user, "onsite")
         return HttpResponseRedirect(reverse("pinax_forums:thread", args=[self.object.id]))
 
 
@@ -310,7 +310,7 @@ class UnsubscribeView(LoginRequiredMixin, DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.object.unsubscribe(request.user, "email")
+        self.object.unsubscribe(request.user, "onsite")
         return HttpResponseRedirect(reverse("pinax_forums:thread", args=[self.object.id]))
 
 
