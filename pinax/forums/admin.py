@@ -51,3 +51,12 @@ admin.site.register(
         "thread"
     ]
 )
+admin.site.register(
+    models.ThreadSubscription,
+    list_display=[
+        "id",
+        "thread",
+        "user",
+        "kind"
+    ]
+)
