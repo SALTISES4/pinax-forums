@@ -272,6 +272,7 @@ class ThreadEditView(PostEditView):
 
     model = ForumThread
     form_class = ThreadForm
+    template_name = "pinax/forums/forumthread_form.html"
 
     @property
     def thread_id(self):
@@ -282,6 +283,7 @@ class ReplyEditView(PostEditView):
 
     model = ForumReply
     form_class = ReplyForm
+    template_name = "pinax/forums/forumreply_form.html"
 
     @property
     def thread_id(self):
