@@ -10,6 +10,7 @@ from .hooks import hookset
 from .models import (
     Forum,
     ForumCategory,
+    ForumPost,
     ForumReply,
     ForumThread,
     ThreadSubscription,
@@ -251,6 +252,7 @@ class ForumThreadReplyCreateView(LoginRequiredMixin, FormView, DetailView):
 
 class PostEditView(LoginRequiredMixin, UpdateView):
 
+    model = ForumPost
     context_object_name = "post"
 
     def dispatch(self, request, *args, **kwargs):
