@@ -242,7 +242,7 @@ class ForumPost(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE)
     content = models.TextField()
     content_html = models.TextField()
-    created = models.DateTimeField(default=timezone.now, editable=False)
+    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         abstract = True
