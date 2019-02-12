@@ -42,3 +42,5 @@ admin.site.register(
     ]
 )
 admin.site.register(models.ForumThread, ForumThreadAdmin)
+
+admin.site.register(models.ForumReply, ForumReplyAdmin)
