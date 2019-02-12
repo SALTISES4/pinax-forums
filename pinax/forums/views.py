@@ -113,7 +113,7 @@ class ForumThreadView(FormView, DetailView):
         context.update({
             "posts": ForumThread.objects.posts(self.object, reverse=(order_type == "desc")),
             "order_type": order_type,
-            "subscribed": self.object.subscribed(self.request.user, "email"),
+            "subscribed": self.object.subscribed(self.request.user, "onsite"),
             "can_create_reply": self.can_create_reply(),
         })
         return context
@@ -236,7 +236,7 @@ class ForumThreadReplyCreateView(LoginRequiredMixin, FormView, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ForumThreadReplyCreateView, self).get_context_data(**kwargs)
-        context["subscribed"] = self.object.subscribed(self.request.user, "email")
+        context["subscribed"] = self.object.subscribed(self.request.user, "onsite")
         context["first_reply"] = not ForumReply.objects.filter(thread=self.object, author=self.request.user).exists()
         return context
 
