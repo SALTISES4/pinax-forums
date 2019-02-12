@@ -7,7 +7,7 @@ class AppConfig(BaseAppConfig):
 
     name = "pinax.forums"
     label = "pinax_forums"
-    verbose_name = "Pinax Fourms"
+    verbose_name = "Pinax Forums"
 
     def ready(self):
         import_module("pinax.forums.receivers")
