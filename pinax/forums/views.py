@@ -329,6 +329,6 @@ class ThreadUpdatesView(LoginRequiredMixin, ListView):
         return context
 
     def post(self, request, *args, **kwargs):
-        subscription = get_object_or_404(self.get_queryset(), pk=request.POST["thread_id"])
+        subscription = get_object_or_404(self.get_queryset(), pk=request.POST["subscription_id"])
         subscription.delete()
         return self.get(request, *args, **kwargs)
