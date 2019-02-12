@@ -252,10 +252,15 @@ class ForumPost(models.Model):
         super(ForumPost, self).save(**kwargs)
 
     # allow editing for short period after posting
-    def editable(self, user):
-        if user == self.author:
-            if timezone.now() < self.created + datetime.timedelta(**settings.PINAX_FORUMS_EDIT_TIMEOUT):
-                return True
+    @property
+    def editable(self):
+        if timezone.now() < self.created + datetime.timedelta(**settings.PINAX_FORUMS_EDIT_TIMEOUT):
+            return True
+        return False
+
+    def can_edit(self, user):
+        if user == self.author and self.editable:
+            return True
         return False
 
 

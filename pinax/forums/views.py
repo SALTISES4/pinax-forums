@@ -255,7 +255,7 @@ class PostEditView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if not self.object.editable(request.user):
+        if not self.object.can_edit(request.user):
             raise Http404()
         return super(PostEditView, self).dispatch(request, *args, **kwargs)
 
