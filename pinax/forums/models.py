@@ -78,6 +78,15 @@ class Forum(models.Model):
     view_count = models.IntegerField(default=0, editable=False)
     post_count = models.IntegerField(default=0, editable=False)
 
+    url = models.URLField(
+        _("External content"),
+        blank=True,
+        help_text=_(
+            "Optional link to external content.  Format: "
+            "https://www.youtube.com/embed/..."
+        ),
+    )
+
     @property
     def thread_count(self):
         return self.threads.count()
