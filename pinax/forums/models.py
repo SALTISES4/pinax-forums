@@ -78,12 +78,6 @@ class Forum(models.Model):
     view_count = models.IntegerField(default=0, editable=False)
     post_count = models.IntegerField(default=0, editable=False)
 
-    url = models.URLField(
-        "External content",
-        blank=True,
-        help_text="Optional link to external content.",
-    )
-
     @property
     def thread_count(self):
         return self.threads.count()
@@ -293,6 +287,11 @@ class ForumThread(ForumPost):
     view_count = models.IntegerField(default=0, editable=False)
     reply_count = models.IntegerField(default=0, editable=False)
     subscriber_count = models.IntegerField(default=0, editable=False)
+    url = models.URLField(
+        "External content",
+        blank=True,
+        help_text="Optional link to external content.",
+    )
 
     objects = ForumThreadManager()
 
