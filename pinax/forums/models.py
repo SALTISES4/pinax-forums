@@ -79,12 +79,9 @@ class Forum(models.Model):
     post_count = models.IntegerField(default=0, editable=False)
 
     url = models.URLField(
-        _("External content"),
+        "External content",
         blank=True,
-        help_text=_(
-            "Optional link to external content.  Format: "
-            "https://www.youtube.com/embed/..."
-        ),
+        help_text="Optional link to external content.",
     )
 
     @property
