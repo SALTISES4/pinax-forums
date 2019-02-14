@@ -18,7 +18,7 @@ class ThreadForm(PostForm, forms.ModelForm):
 
     class Meta:
         model = ForumThread
-        fields = ["title", "content"]
+        fields = ["title", "content", "url"]
 
 
 class ReplyForm(PostForm, forms.ModelForm):
