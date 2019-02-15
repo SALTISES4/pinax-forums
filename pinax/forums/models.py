@@ -268,9 +268,7 @@ class ForumPost(models.Model):
 
 
 def pdf_only(file):
-    kind = filetype.guess(file)
-    print(kind)
-    print(kind.extension)
+    kind = filetype.guess(file.file)
 
     if kind.extension != "pdf":
         raise ValidationError(
@@ -313,7 +311,7 @@ class ForumThread(ForumPost):
         null=True,
         upload_to="pdfs",
         help_text="Optional.",
-        validators=[FileExtensionValidator(["pdf"]), pdf_only],
+        validators=[pdf_only, FileExtensionValidator(["pdf"])],
     )
 
     objects = ForumThreadManager()
