@@ -77,7 +77,8 @@ setup(
     },
     install_requires=[
         "django>=1.11",
-        "django-appconf>=1.0.2"
+        "django-appconf>=1.0.2",
+        "filetype>=1.0.4",
     ],
     test_suite="runtests.runtests",
     tests_require=[

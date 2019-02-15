@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
 
 import datetime
+import filetype
 import json
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -264,6 +267,18 @@ class ForumPost(models.Model):
         return False
 
 
+def pdf_only(file):
+    kind = filetype.guess(file)
+    print(kind)
+    print(kind.extension)
+
+    if kind.extension != "pdf":
+        raise ValidationError(
+            'Invalid file type',
+            params={'type': kind.extension},
+        )
+
+
 @python_2_unicode_compatible
 class ForumThread(ForumPost):
 
@@ -291,6 +306,14 @@ class ForumThread(ForumPost):
         "External content",
         blank=True,
         help_text="Optional link to external content.",
+    )
+    pdf = models.FileField(
+        "A PDF file with additional information",
+        blank=True,
+        null=True,
+        upload_to="pdfs",
+        help_text="Optional.",
+        validators=[FileExtensionValidator(["pdf"]), pdf_only],
     )
 
     objects = ForumThreadManager()
