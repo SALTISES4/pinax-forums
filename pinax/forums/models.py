@@ -311,7 +311,7 @@ class ForumThread(ForumPost):
         null=True,
         upload_to="pdfs",
         help_text="Optional.",
-        validators=[pdf_only, FileExtensionValidator(["pdf"])],
+        validators=[FileExtensionValidator(["pdf"])],
     )
 
     objects = ForumThreadManager()
