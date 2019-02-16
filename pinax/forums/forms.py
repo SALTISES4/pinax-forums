@@ -27,4 +27,4 @@ class ReplyForm(PostForm, forms.ModelForm):
 
     class Meta:
         model = ForumReply
-        fields = ["content"]
+        fields = ["content", "reply"]

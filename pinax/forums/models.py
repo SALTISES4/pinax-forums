@@ -387,6 +387,13 @@ class ForumReply(ForumPost):
     kind = "reply"
 
     thread = models.ForeignKey(ForumThread, related_name="replies", on_delete=models.CASCADE)
+    reply = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        limit_choices_to={thread: self.thread},
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         verbose_name = "forum reply"
