@@ -391,7 +391,7 @@ class ForumReply(ForumPost):
         "self",
         null=True,
         blank=True,
-        limit_choices_to={thread: thread},
+        limit_choices_to={"thread": thread},
         on_delete=models.CASCADE,
     )
 
