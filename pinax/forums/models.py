@@ -268,8 +268,8 @@ class ForumPost(models.Model):
 
 
 def pdf_only(file):
-    print(file)
-    kind = filetype.guess(file)
+    print(file.chunks(chunk_size=262))
+    kind = filetype.guess(file.chunks(chunk_size=262))
 
     if kind.mime != "application/pdf":
         raise ValidationError(
