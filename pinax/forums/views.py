@@ -2,7 +2,13 @@ from django.contrib import messages
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.views.generic import DetailView, FormView, ListView, UpdateView
+from django.views.generic import (
+    DeleteView,
+    DetailView,
+    FormView,
+    ListView,
+    UpdateView,
+)
 
 from .compat import LoginRequiredMixin
 from .forms import ReplyForm, ThreadForm
@@ -288,6 +294,21 @@ class ReplyEditView(PostEditView):
     @property
     def thread_id(self):
         return self.object.thread.id
+
+
+class ReplyDeleteView(LoginRequiredMixin, DeleteView):
+
+    model = ForumReply
+    template_name = "pinax/forums/forumreply_delete.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.object.can_edit(request.user):
+            raise Http404()
+        return super(ReplyDeleteView, self).dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse("pinax_forums:thread", args=[self.object.thread.id])
 
 
 class SubscribeView(LoginRequiredMixin, DetailView):
