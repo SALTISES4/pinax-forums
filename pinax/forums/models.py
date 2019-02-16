@@ -268,13 +268,14 @@ class ForumPost(models.Model):
 
 
 def pdf_only(file):
-    kind = filetype.guess(file.open(r))
+    kind = filetype.guess(file.open(mode='r'))
 
     if kind.mime != "application/pdf":
         raise ValidationError(
             'Invalid file type',
             params={'mime': kind.mime},
         )
+    file.close()
 
 
 @python_2_unicode_compatible
