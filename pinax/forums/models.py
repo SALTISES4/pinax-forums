@@ -380,10 +380,11 @@ class ForumThread(ForumPost):
     def thread(self):
         return self
 
-    def __unicode__(self):
-        return self.pk
+    def __str__(self):
+        return self.id
 
 
+@python_2_unicode_compatible
 class ForumReply(ForumPost):
 
     # used for code that needs to know the kind of post this object is.
@@ -401,8 +402,8 @@ class ForumReply(ForumPost):
         verbose_name = "forum reply"
         verbose_name_plural = "forum replies"
 
-    def __unicode__(self):
-        return self.pk
+    def __str__(self):
+        return self.id
 
 
 class UserPostCount(models.Model):
