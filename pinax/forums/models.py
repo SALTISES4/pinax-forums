@@ -381,7 +381,7 @@ class ForumThread(ForumPost):
         return self
 
     def __unicode__(self):
-        return self.id
+        return self.pk
 
 
 class ForumReply(ForumPost):
@@ -402,7 +402,7 @@ class ForumReply(ForumPost):
         verbose_name_plural = "forum replies"
 
     def __unicode__(self):
-        return self.id
+        return self.pk
 
 
 class UserPostCount(models.Model):
