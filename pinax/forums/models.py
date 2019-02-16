@@ -380,6 +380,9 @@ class ForumThread(ForumPost):
     def thread(self):
         return self
 
+    def __unicode__(self):
+        return self.id
+
 
 class ForumReply(ForumPost):
 
@@ -397,6 +400,9 @@ class ForumReply(ForumPost):
     class Meta:
         verbose_name = "forum reply"
         verbose_name_plural = "forum replies"
+
+    def __unicode__(self):
+        return self.id
 
 
 class UserPostCount(models.Model):
