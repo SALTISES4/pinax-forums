@@ -403,6 +403,9 @@ class ForumReply(ForumPost):
         verbose_name_plural = "forum replies"
 
     def __str__(self):
+        print(self)
+        print(self.id)
+        print(self.content)
         return self.id
 
 
