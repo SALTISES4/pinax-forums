@@ -393,6 +393,7 @@ class ForumReply(ForumPost):
     thread = models.ForeignKey(ForumThread, related_name="replies", on_delete=models.CASCADE)
     reply = models.ForeignKey(
         "self",
+        related_name="reply_replies",
         null=True,
         blank=True,
         on_delete=models.CASCADE,
