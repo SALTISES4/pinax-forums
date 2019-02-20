@@ -1,3 +1,5 @@
+import django.dispatch
+
 from django.contrib import messages
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -96,6 +98,10 @@ class ForumView(DetailView):
         return self.render_to_response(context)
 
 
+
+# Set up signal to indicate a thread visit for apps with notifications
+thread_visited = django.dispatch.Signal(providing_args=["user", "thread"])
+
 class ForumThreadView(FormView, DetailView):
 
     form_class = ReplyForm
@@ -145,6 +151,8 @@ class ForumThreadView(FormView, DetailView):
         self.object = self.get_object()
         if not hookset.can_access(request, self.object):
             raise Http404()
+
+        thread_visited.send(sender=self.__class__, user=request.user, thread=self.object)
         return super(ForumThreadView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
