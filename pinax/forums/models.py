@@ -26,7 +26,13 @@ def issue_update(kind, **kwargs):
 class ForumCategory(models.Model):
 
     title = models.CharField(max_length=100)
-    parent = models.ForeignKey("self", null=True, blank=True, related_name="subcategories", on_delete=models.CASCADE)
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        related_name="subcategories",
+        on_delete=models.CASCADE,
+    )
 
     # @@@ total descendant forum count?
     # @@@ make group-aware
@@ -58,13 +64,10 @@ class Forum(models.Model):
         null=True,
         blank=True,
         related_name="subforums",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     category = models.ForeignKey(
-        ForumCategory,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL
+        ForumCategory, null=True, blank=True, on_delete=models.SET_NULL
     )
 
     # @@@ make group-aware
@@ -75,7 +78,7 @@ class Forum(models.Model):
         null=True,
         editable=False,
         on_delete=models.SET_NULL,
-        related_name="+"
+        related_name="+",
     )
 
     view_count = models.IntegerField(default=0, editable=False)
@@ -105,7 +108,9 @@ class Forum(models.Model):
             post_count += forum.post_count
         for thread in self.threads.all():
             thread.update_reply_count()
-            post_count += thread.reply_count + 1  # add one for the thread itself
+            post_count += (
+                thread.reply_count + 1
+            )  # add one for the thread itself
         self.post_count = post_count
         self.save()
 
@@ -144,10 +149,12 @@ class Forum(models.Model):
                 "description": self.description,
                 "parent": self.parent_id,
                 "category": self.category_id,
-                "last_modified": self.last_modified.strftime("%Y-%m-%d %H:%M:%S"),
+                "last_modified": self.last_modified.strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
                 "last_thread": self.last_thread_id,
                 "view_count": self.view_count,
-                "post_count": self.post_count
+                "post_count": self.post_count,
             },
             "threads": [
                 {
@@ -157,7 +164,9 @@ class Forum(models.Model):
                     "created": t.created.strftime("%Y-%m-%d %H:%M:%S"),
                     "forum": t.forum_id,
                     "title": t.title,
-                    "last_modified": t.last_modified.strftime("%Y-%m-%d %H:%M:%S"),
+                    "last_modified": t.last_modified.strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
                     "last_reply": t.last_reply_id,
                     "view_count": t.view_count,
                     "reply_count": t.reply_count,
@@ -180,60 +189,68 @@ class Forum(models.Model):
                             "kind": s.kind,
                         }
                         for s in t.subscriptions.all()
-                    ]
+                    ],
                 }
                 for t in self.threads.all()
-            ]
+            ],
         }
         json.dump(data, open(out, "wb"))
 
     @classmethod
     def restore(cls, in_):
         data = json.load(open(in_))
-        forum = Forum(**dict(
-            id=data["self"]["id"],
-            title=data["self"]["title"],
-            description=data["self"]["description"],
-            parent_id=data["self"]["parent"],
-            category_id=data["self"]["category"],
-            last_modified=data["self"]["last_modified"],
-            view_count=data["self"]["view_count"],
-            post_count=data["self"]["post_count"]
-        ))
+        forum = Forum(
+            **dict(
+                id=data["self"]["id"],
+                title=data["self"]["title"],
+                description=data["self"]["description"],
+                parent_id=data["self"]["parent"],
+                category_id=data["self"]["category"],
+                last_modified=data["self"]["last_modified"],
+                view_count=data["self"]["view_count"],
+                post_count=data["self"]["post_count"],
+            )
+        )
         forum._importing = True
         forum.save()
         for thread_data in data["threads"]:
-            thread = ForumThread(**dict(
-                id=thread_data["id"],
-                author_id=thread_data["author"],
-                content=thread_data["content"],
-                created=thread_data["created"],
-                forum_id=thread_data["forum"],
-                title=thread_data["title"],
-                last_modified=thread_data["last_modified"],
-                view_count=thread_data["view_count"],
-                reply_count=thread_data["reply_count"],
-                subscriber_count=thread_data["subscriber_count"]
-            ))
+            thread = ForumThread(
+                **dict(
+                    id=thread_data["id"],
+                    author_id=thread_data["author"],
+                    content=thread_data["content"],
+                    created=thread_data["created"],
+                    forum_id=thread_data["forum"],
+                    title=thread_data["title"],
+                    last_modified=thread_data["last_modified"],
+                    view_count=thread_data["view_count"],
+                    reply_count=thread_data["reply_count"],
+                    subscriber_count=thread_data["subscriber_count"],
+                )
+            )
             thread._importing = True
             thread.save()
             for reply_data in thread_data["replies"]:
-                reply = ForumReply(**dict(
-                    id=reply_data["id"],
-                    author_id=reply_data["author"],
-                    content=reply_data["content"],
-                    created=reply_data["created"],
-                    thread_id=reply_data["thread"],
-                ))
+                reply = ForumReply(
+                    **dict(
+                        id=reply_data["id"],
+                        author_id=reply_data["author"],
+                        content=reply_data["content"],
+                        created=reply_data["created"],
+                        thread_id=reply_data["thread"],
+                    )
+                )
                 reply._importing = True
                 reply.save()
             for subscriber_data in thread_data["subscriptions"]:
-                ThreadSubscription(**dict(
-                    id=subscriber_data["id"],
-                    user_id=subscriber_data["user"],
-                    thread_id=subscriber_data["thread"],
-                    kind=subscriber_data["kind"],
-                )).save()
+                ThreadSubscription(
+                    **dict(
+                        id=subscriber_data["id"],
+                        user_id=subscriber_data["user"],
+                        thread_id=subscriber_data["thread"],
+                        kind=subscriber_data["kind"],
+                    )
+                ).save()
             thread.last_reply_id = thread_data["last_reply"]
             thread.save()
         forum.last_thread_id = data["self"]["last_thread"]
@@ -242,7 +259,11 @@ class Forum(models.Model):
 
 class ForumPost(models.Model):
 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="%(app_label)s_%(class)s_related",
+        on_delete=models.CASCADE,
+    )
     content = models.TextField()
     content_html = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
@@ -257,7 +278,9 @@ class ForumPost(models.Model):
     # allow editing for short period after posting
     @property
     def editable(self):
-        if timezone.now() < self.created + datetime.timedelta(**settings.PINAX_FORUMS_EDIT_TIMEOUT):
+        if timezone.now() < self.created + datetime.timedelta(
+            **settings.PINAX_FORUMS_EDIT_TIMEOUT
+        ):
             return True
         return False
 
@@ -272,9 +295,9 @@ def pdf_only(file):
 
     if kind.mime != "application/pdf":
         raise ValidationError(
-            'Invalid file type',
-            params={'mime': kind.mime},
+            "Invalid file type", params={"mime": kind.mime},
         )
+
 
 @python_2_unicode_compatible
 class ForumThread(ForumPost):
@@ -282,17 +305,13 @@ class ForumThread(ForumPost):
     # used for code that needs to know the kind of post this object is.
     kind = "thread"
 
-    forum = models.ForeignKey(Forum, related_name="threads", on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
-    last_modified = models.DateTimeField(
-        default=timezone.now,
-        editable=False
+    forum = models.ForeignKey(
+        Forum, related_name="threads", on_delete=models.CASCADE
     )
+    title = models.CharField(max_length=100)
+    last_modified = models.DateTimeField(default=timezone.now, editable=False)
     last_reply = models.ForeignKey(
-        "ForumReply",
-        null=True,
-        editable=False,
-        on_delete=models.SET_NULL
+        "ForumReply", null=True, editable=False, on_delete=models.SET_NULL
     )
     sticky = models.IntegerField(default=0)
     closed = models.DateTimeField(null=True, blank=True)
@@ -339,11 +358,15 @@ class ForumThread(ForumPost):
         """
         Subscribes the given user to this thread (handling duplicates)
         """
-        ThreadSubscription.objects.get_or_create(thread=self, user=user, kind=kind)
+        ThreadSubscription.objects.get_or_create(
+            thread=self, user=user, kind=kind
+        )
 
     def unsubscribe(self, user, kind):
         try:
-            subscription = ThreadSubscription.objects.get(thread=self, user=user, kind=kind)
+            subscription = ThreadSubscription.objects.get(
+                thread=self, user=user, kind=kind
+            )
         except ThreadSubscription.DoesNotExist:
             return
         else:
@@ -390,7 +413,9 @@ class ForumReply(ForumPost):
     # used for code that needs to know the kind of post this object is.
     kind = "reply"
 
-    thread = models.ForeignKey(ForumThread, related_name="replies", on_delete=models.CASCADE)
+    thread = models.ForeignKey(
+        ForumThread, related_name="replies", on_delete=models.CASCADE
+    )
     reply = models.ForeignKey(
         "self",
         related_name="reply_replies",
@@ -409,7 +434,11 @@ class ForumReply(ForumPost):
 
 class UserPostCount(models.Model):
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="post_count", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="post_count",
+        on_delete=models.CASCADE,
+    )
     count = models.IntegerField(default=0)
 
     @classmethod
@@ -420,10 +449,7 @@ class UserPostCount(models.Model):
             reply_count = ForumReply.objects.filter(author=user).count()
             count = thread_count + reply_count
             upc, created = cls._default_manager.get_or_create(
-                user=user,
-                defaults=dict(
-                    count=count
-                )
+                user=user, defaults=dict(count=count)
             )
             if not created:
                 upc.count = count
@@ -432,8 +458,14 @@ class UserPostCount(models.Model):
 
 class ThreadSubscription(models.Model):
 
-    thread = models.ForeignKey(ForumThread, related_name="subscriptions", on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="forum_subscriptions", on_delete=models.CASCADE)
+    thread = models.ForeignKey(
+        ForumThread, related_name="subscriptions", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="forum_subscriptions",
+        on_delete=models.CASCADE,
+    )
     kind = models.CharField(max_length=15)
 
     class Meta:
@@ -443,9 +475,13 @@ class ThreadSubscription(models.Model):
     def setup_onsite(cls):
         User = get_user_model()
         for user in User.objects.all():
-            threads = ForumThread.objects.filter(author=user).values_list("pk", flat=True)
-            threads_by_replies = ForumReply.objects.filter(
-                author=user
-            ).distinct().values_list("thread", flat=True)
+            threads = ForumThread.objects.filter(author=user).values_list(
+                "pk", flat=True
+            )
+            threads_by_replies = (
+                ForumReply.objects.filter(author=user)
+                .distinct()
+                .values_list("thread", flat=True)
+            )
             for thread in set(threads).union(threads_by_replies):
                 ForumThread.objects.get(pk=thread).subscribe(user, "onsite")
