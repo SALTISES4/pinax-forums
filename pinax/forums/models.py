@@ -373,7 +373,7 @@ class ForumThread(ForumPost):
             subscription.delete()
 
     def subscribed(self, user, kind):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return False
         try:
             ThreadSubscription.objects.get(thread=self, user=user, kind=kind)
