@@ -14,9 +14,10 @@ class ForumThreadPostQuerySet(models.query.QuerySet):
             yield thread
 
     def _clone(self, *args, **kwargs):
+        cloned = super(ForumThreadPostQuerySet, self)._clone(*args, **kwargs)
         if hasattr(self, "_posts_manager_params"):
-            kwargs["_posts_manager_params"] = self._posts_manager_params
-        return super(ForumThreadPostQuerySet, self)._clone(*args, **kwargs)
+            cloned._posts_manager_params = self._posts_manager_params
+        return cloned
 
 
 class ForumThreadManager(models.Manager):
